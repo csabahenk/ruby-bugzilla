@@ -267,6 +267,7 @@ module BzConsole
       parser.on('-s', '--summary', 'Displays bugs summary only') {opts[:summary] = true}
       parser.on('-d', '--details', 'Displays detailed bugs information') {opts[:details] = true}
       parser.on('-a', '--all', 'Displays the whole data in bugs') {opts[:all] = true}
+      parser.on('-y', '--yaml', 'Displays bugs data as YAML') {opts[:yaml] = true}
       parser.on('--anonymous', 'Access to Bugzilla anonymously') {opts[:anonymous] = true}
 
       super
@@ -293,6 +294,8 @@ module BzConsole
                  result['priority'],
                  result['severity'],
                  result['summary'])
+        elsif opts[:command][:yaml] == true then
+          print(result.to_yaml)
         else
           printf("Bug#%s - %s\n", result['id'], result['summary'])
           printf("Status:\t\t%s%s\n", result['status'], !result['resolution'].empty? ? sprintf("[%s]", result['resolution']) : "")

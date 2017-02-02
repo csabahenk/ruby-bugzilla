@@ -268,6 +268,7 @@ module BzConsole
       parser.on('-d', '--details', 'Displays detailed bugs information') {opts[:details] = true}
       parser.on('-a', '--all', 'Displays the whole data in bugs') {opts[:all] = true}
       parser.on('-y', '--yaml', 'Displays bugs data as YAML') {opts[:yaml] = true}
+      parser.on('-c', '--cache=FILES', 'load results from FILES') { |v| opts[:cache] ||= []; opts[:cache].push(*v.split(','))}
       parser.on('--anonymous', 'Access to Bugzilla anonymously') {opts[:anonymous] = true}
 
       super
@@ -327,7 +328,7 @@ module BzConsole
       argv.each do |bugn|
         bugn =~ /(.*):(.*)/
         prefix = $1
-        nnn = $2
+        nna = $2.split(',')
         if prefix.nil? then
           raise ArgumentError, sprintf("No prefix specified for Bug#%s", bugn)
         end
@@ -335,37 +336,60 @@ module BzConsole
           raise RuntimeError, sprintf("No host information for %s", prefix)
         end
 
-        info = conf[prefix]
-        if opts[:command][:anonymous] == true then
-          login = nil
-          pass = nil
-        else
-          login = info[:User].nil? ? ask("Bugzilla ID: ") : info[:User]
-          pass = info[:Password].nil? ? ask("Bugzilla password: ") {|q| q.echo = false} : info[:Password]
+        cache = opts[:command][:cache]
+        resulth = {}
+        nna0 = nna.dup
+        if cache
+          cacheh = {}
+          cache.each do |cache_file|
+            File.open(cache_file) do |f|
+              YAML.load_stream(f) do |e|
+                cacheh[e["id"].to_s] = e
+              end
+            end
+          end
+          resulta,nna1x = nna.zip(cacheh.values_at(*nna)).partition { |k,v| v }
+          resulth = resulta.to_h
+          nna = nna1x.transpose[0]||[]
         end
 
-        xmlrpc,host = get_xmlrpc(conf[prefix],opts) do |h|
-            @plugin.run(:pre, h, :getbug, opts)
-        end
-
-        user = Bugzilla::User.new(xmlrpc)
-        user.session(login, pass) do
-          bug = Bugzilla::Bug.new(xmlrpc)
-
-          result = nil
-          if opts[:command][:summary] == true then
-            result = bug.get_bugs(nnn.split(','))
-          elsif opts[:command][:details] == true then
-            result = bug.get_bugs(nnn.split(','), ::Bugzilla::Bug::FIELDS_DETAILS)
+        unless nna.empty?
+          info = conf[prefix]
+          if opts[:command][:anonymous] == true then
+            login = nil
+            pass = nil
           else
-            result = bug.get_bugs(nnn.split(','), nil)
+            login = info[:User].nil? ? ask("Bugzilla ID: ") : info[:User]
+            pass = info[:Password].nil? ? ask("Bugzilla password: ") {|q| q.echo = false} : info[:Password]
           end
 
-          @plugin.run(:post, host, :getbug, result)
-
-          result.each do |r|
-            yield r
+          xmlrpc,host = get_xmlrpc(conf[prefix],opts) do |h|
+              @plugin.run(:pre, h, :getbug, opts)
           end
+
+          user = Bugzilla::User.new(xmlrpc)
+          user.session(login, pass) do
+            bug = Bugzilla::Bug.new(xmlrpc)
+
+            result = nil
+            if opts[:command][:summary] == true then
+              result = bug.get_bugs(nna)
+            elsif opts[:command][:details] == true then
+              result = bug.get_bugs(nna, ::Bugzilla::Bug::FIELDS_DETAILS)
+            else
+              result = bug.get_bugs(nna, nil)
+            end
+            result.each do |r|
+              resulth[r["id"].to_s] = r
+            end
+          end
+        end
+        result = nna0.map { |nn| resulth[nn] }.compact
+
+        @plugin.run(:post, host, :getbug, result)
+
+        result.each do |r|
+          yield r
         end
       end
     end # def real_do

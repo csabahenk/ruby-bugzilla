@@ -4,23 +4,19 @@ $:.unshift lib unless $:.include?(lib)
 require 'bugzilla/version'
 
 Gem::Specification.new do |s|
-  s.name        = "ruby-bugzilla"
+  s.name        = "ruby-bugzilla-thin"
   s.version     = Bugzilla::VERSION
   s.platform    = Gem::Platform::RUBY
-  s.authors     = ["Akira TAGOH"]
-  s.email       = ["akira@tagoh.org"]
-  s.homepage    = "http://rubygems.org/gems/ruby-bugzilla"
+  s.authors     = ["Csaba Henk"]
+  s.email       = ["csaba.henk@lowlife.hu"]
+  s.homepage    = "http://rubygems.org/gems/ruby-bugzilla-thin"
   s.summary = %Q{Ruby binding for Bugzilla WebService APIs}
   s.description = %Q{This aims to provide similar features to access to Bugzilla through WebService APIs in Ruby.}
   s.license     = 'LGPL-3.0+'
   s.required_rubygems_version = ">= 1.3.6"
 
   s.add_development_dependency "rspec", "~> 2.0"
-  s.add_runtime_dependency "gruff", "~> 0"
   s.add_runtime_dependency "highline"
-
-  # seems like gruff is missing this one
-  #s.add_runtime_dependency "rmagick", "~> 0"
 
   s.add_development_dependency("bundler", ["~> 1.0"])
 

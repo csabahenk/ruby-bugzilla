@@ -4,20 +4,16 @@ $:.unshift lib unless $:.include?(lib)
 require 'bugzilla/version'
 
 Gem::Specification.new do |s|
-  s.name        = "ruby-bugzilla-thin"
+  s.name        = "ruby-bugzilla-nomagick"
   s.version     = Bugzilla::VERSION
   s.platform    = Gem::Platform::RUBY
   s.authors     = ["Csaba Henk"]
   s.email       = ["csaba.henk@lowlife.hu"]
-  s.homepage    = "http://rubygems.org/gems/ruby-bugzilla-thin"
+  s.homepage    = "http://rubygems.org/gems/ruby-bugzilla-nomagick"
   s.summary = %Q{Ruby binding for Bugzilla WebService APIs}
-  s.description = %Q{This aims to provide similar features to access to Bugzilla through WebService APIs in Ruby -- deprecated, has been renamed to ruby-bugzilla-nomagick to avoid confusion with Thin (http://code.macournoyer.com/thin/).}
+  s.description = %Q{This aims to provide similar features to access to Bugzilla through WebService APIs in Ruby -- RMagcik stripped variant of ruby-bugzilla.}
   s.license     = 'LGPL-3.0+'
   s.required_rubygems_version = ">= 1.3.6"
-  s.post_install_message = <<-MESSAGE
- !    This gem has been deprecated and reinstantiated as ruby-bugzilla-nomagick
- !    to avoid confusion with Thin (http://code.macournoyer.com/thin/)
-  MESSAGE
 
   s.add_development_dependency "rspec", "~> 2.0"
   s.add_runtime_dependency "highline"

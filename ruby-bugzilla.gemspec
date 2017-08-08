@@ -11,9 +11,13 @@ Gem::Specification.new do |s|
   s.email       = ["csaba.henk@lowlife.hu"]
   s.homepage    = "http://rubygems.org/gems/ruby-bugzilla-thin"
   s.summary = %Q{Ruby binding for Bugzilla WebService APIs}
-  s.description = %Q{This aims to provide similar features to access to Bugzilla through WebService APIs in Ruby.}
+  s.description = %Q{This aims to provide similar features to access to Bugzilla through WebService APIs in Ruby -- deprecated, has been renamed to ruby-bugzilla-nomagick to avoid confusion with Thin (http://code.macournoyer.com/thin/).}
   s.license     = 'LGPL-3.0+'
   s.required_rubygems_version = ">= 1.3.6"
+  s.post_install_message = <<-MESSAGE
+ !    This gem has been deprecated and reinstantiated as ruby-bugzilla-nomagick
+ !    to avoid confusion with Thin (http://code.macournoyer.com/thin/)
+  MESSAGE
 
   s.add_development_dependency "rspec", "~> 2.0"
   s.add_runtime_dependency "highline"

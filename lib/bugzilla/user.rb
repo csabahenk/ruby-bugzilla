@@ -62,6 +62,9 @@ Keeps the bugzilla session during doing something in the block.
         conf = {}
       end
       if !val.nil? then
+         valid_login({'login'=>user, 'token'=>val}) or val = nil
+      end
+      if !val.nil? then
         if key == :token then
           @iface.token = val
         else
@@ -134,6 +137,16 @@ See http://www.bugzilla.org/docs/tip/en/html/api/Bugzilla/WebService/User.html
 
 =end
 
+=begin rdoc
+
+==== Bugzilla::User#valid_login(params)
+
+Verify validity of a token for an user.
+
+See http://www.bugzilla.org/docs/tip/en/html/api/Bugzilla/WebService/User.html
+
+=end
+
     protected
 
     def _login(cmd, *args)
@@ -150,6 +163,11 @@ See http://www.bugzilla.org/docs/tip/en/html/api/Bugzilla/WebService/User.html
     def _logout(cmd, *args)
       @iface.call(cmd)
     end # def _logout
+
+    def _valid_login(cmd, *args)
+      raise ArgumentError, "Invalid parameters" unless args[0].kind_of?(Hash)
+      @iface.call(cmd, args[0])
+    end
 
     def __offer_account_by_email(cmd, *args)
       # FIXME
